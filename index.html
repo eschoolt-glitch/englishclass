@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>창원 월영초등학교 Audrey's English Class</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <!-- Tone.js for web audio / timer alarm sound -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        jua: ['Jua', 'sans-serif'],
+                        nunito: ['Nunito', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            pink: '#FF8EAF',
+                            yellow: '#FFDD67',
+                            blue: '#4DB6AC',
+                            purple: '#A594F9',
+                            sky: '#70D6FF',
+                            bg: '#FAF8F5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Nunito', 'Jua', sans-serif;
+            background-color: #FAF8F5;
+            background-image: radial-gradient(#E5E7EB 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+        }
+        .bouncy-hover {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .bouncy-hover:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F1F1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between">
+
+    <!-- Header Section -->
+    <header class="bg-white border-b-4 border-yellow-300 shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="bg-yellow-400 text-white p-3 rounded-2xl shadow-md flex items-center justify-center">
+                    <i class="fa-solid fa-apple-whole text-2xl animate-bounce"></i>
+                </div>
+                <div>
+                    <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                        창원 월영초등학교
+                    </span>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight leading-tight">
+                        Teacher Audrey's <span class="text-pink-500">English Class</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Date & Time Banner -->
+            <div class="flex items-center bg-amber-50 border border-amber-200 rounded-2xl px-4 py-2 text-sm text-amber-900 font-bold shadow-sm">
+                <i class="fa-regular fa-calendar-days text-amber-500 mr-2 text-lg"></i>
+                <span id="current-date">Today's Date Loading...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full space-y-6">
+
+        <!-- Welcome Banner & Daily Greeting / Word of the Day -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Greeting Card -->
+            <div class="md:col-span-2 bg-gradient-to-r from-teal-400 via-sky-400 to-indigo-400 rounded-3xl p-6 text-white shadow-md relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute -right-6 -bottom-6 text-white/10 text-9xl font-black select-none pointer-events-none">
+                    HELLO
+                </div>
+                <div>
+                    <div class="inline-block bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-extrabold tracking-wider uppercase mb-2">
+                        Welcome Back!
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-extrabold mb-2" id="time-greeting">Good Morning, Students! ☀️</h2>
+                    <p class="text-teal-50 text-base md:text-lg">
+                        Welcome to Teacher Audrey's English room. Ready to speak English today?
+                    </p>
+                </div>
+                <div class="mt-4 pt-4 border-t border-white/20 flex items-center justify-between">
+                    <span class="text-sm font-semibold opacity-90"><i class="fa-solid fa-heart mr-1 text-pink-300"></i> Have fun & do your best!</span>
+                    <button onclick="speakText(document.getElementById('time-greeting').innerText)" class="bg-white text-teal-600 px-3 py-1.5 rounded-xl font-bold text-sm shadow hover:bg-teal-50 transition active:scale-95">
+                        <i class="fa-solid fa-volume-high mr-1"></i> Listen
+                    </button>
+                </div>
+            </div>
+
+            <!-- Word of the Day Card -->
+            <div class="bg-white rounded-3xl p-6 shadow-md border-2 border-purple-100 flex flex-col justify-between bouncy-hover">
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-extrabold text-purple-600 bg-purple-100 px-3 py-1 rounded-full">
+                            <i class="fa-solid fa-star mr-1"></i> Word of the Day
+                        </span>
+                        <button onclick="nextWord()" class="text-slate-400 hover:text-purple-600 transition text-sm font-bold">
+                            Next <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                    <div class="mt-3">
+                        <h3 id="word-title" class="text-3xl font-extrabold text-purple-700 tracking-wide">Awesome</h3>
+                        <p id="word-pronounce" class="text-sm text-slate-400 font-semibold mt-0.5">[ AW-suhm ]</p>
+                        <p id="word-meaning" class="text-slate-600 font-bold mt-2 text-base">멋진, 아주 훌륭한</p>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-3 border-t border-slate-100">
+                    <p id="word-example" class="text-xs italic text-slate-500 truncate mr-2">"You did an awesome job today!"</p>
+                    <button id="listen-word-btn" class="bg-purple-500 hover:bg-purple-600 text-white p-2.5 rounded-xl shadow transition active:scale-95 flex-shrink-0">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Dashboard: Timer, Weather, Meal -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Classroom Timer (Spans 2 columns on large screens) -->
+            <section class="lg:col-span-2 bg-white rounded-3xl p-6 md:p-8 shadow-md border-2 border-pink-100 flex flex-col justify-between">
+                <div>
+                    <!-- Header -->
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-pink-100 text-pink-500 p-3 rounded-2xl">
+                                <i class="fa-solid fa-stopwatch text-2xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-extrabold text-slate-800">Classroom Timer</h2>
+                                <p class="text-xs text-slate-400 font-semibold">Keep track of activity time!</p>
+                            </div>
+                        </div>
+                        <!-- Quick Presets -->
+                        <div class="hidden sm:flex items-center space-x-2">
+                            <button onclick="setTimer(1)" class="bg-slate-100 hover:bg-pink-100 hover:text-pink-600 text-slate-600 px-3 py-1.5 rounded-xl text-xs font-bold transition">1 Min</button>
+                            <button onclick="setTimer(3)" class="bg-slate-100 hover:bg-pink-100 hover:text-pink-600 text-slate-600 px-3 py-1.5 rounded-xl text-xs font-bold transition">3 Min</button>
+                            <button onclick="setTimer(5)" class="bg-slate-100 hover:bg-pink-100 hover:text-pink-600 text-slate-600 px-3 py-1.5 rounded-xl text-xs font-bold transition">5 Min</button>
+                            <button onclick="setTimer(10)" class="bg-slate-100 hover:bg-pink-100 hover:text-pink-600 text-slate-600 px-3 py-1.5 rounded-xl text-xs font-bold transition">10 Min</button>
+                        </div>
+                    </div>
+
+                    <!-- Timer Display Area -->
+                    <div class="bg-gradient-to-b from-pink-50 to-orange-50 rounded-3xl p-6 border-2 border-pink-200 text-center relative overflow-hidden my-4">
+                        <div id="timer-display" class="text-6xl sm:text-7xl md:text-8xl font-black text-slate-800 font-mono tracking-wider drop-shadow-sm my-2">
+                            05:00
+                        </div>
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden mt-4">
+                            <div id="timer-progress" class="bg-pink-500 h-full w-full transition-all duration-500 rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- Preset Mobile Buttons -->
+                    <div class="flex sm:hidden justify-center space-x-2 my-3">
+                        <button onclick="setTimer(1)" class="bg-slate-100 hover:bg-pink-100 hover:text-pink-600 text-slate-600 px-3 py-1 rounded-lg text-xs font-bold">1m</button>
+                        <button onclick="setTimer(3)" class="bg-slate-100 hover:bg-pink-100 hover:text-pink-600 text-slate-600 px-3 py-1 rounded-lg text-xs font-bold">3m</button>
+                        <button onclick="setTimer(5)" class="bg-slate-100 hover:bg-pink-100 hover:text-pink-600 text-slate-600 px-3 py-1 rounded-lg text-xs font-bold">5m</button>
+                        <button onclick="setTimer(10)" class="bg-slate-100 hover:bg-pink-100 hover:text-pink-600 text-slate-600 px-3 py-1 rounded-lg text-xs font-bold">10m</button>
+                    </div>
+
+                    <!-- Custom Duration Controls -->
+                    <div class="flex items-center justify-center space-x-3 mb-6">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Set Custom:</label>
+                        <div class="flex items-center space-x-1 bg-slate-100 rounded-xl p-1 border border-slate-200">
+                            <input type="number" id="custom-min" min="0" max="99" value="5" class="w-12 text-center bg-transparent font-bold text-slate-700 outline-none text-sm">
+                            <span class="text-xs text-slate-400 font-bold">m</span>
+                            <input type="number" id="custom-sec" min="0" max="59" value="0" class="w-12 text-center bg-transparent font-bold text-slate-700 outline-none text-sm">
+                            <span class="text-xs text-slate-400 font-bold">s</span>
+                        </div>
+                        <button onclick="applyCustomTime()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold px-3 py-2 rounded-xl transition">
+                            Apply
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Timer Action Buttons -->
+                <div class="grid grid-cols-3 gap-3">
+                    <button id="start-btn" onclick="startTimer()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-extrabold py-3.5 rounded-2xl shadow-md text-base sm:text-lg flex items-center justify-center space-x-2 transition">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Start</span>
+                    </button>
+                    <button id="pause-btn" onclick="pauseTimer()" class="bg-amber-400 hover:bg-amber-500 active:scale-95 text-slate-900 font-extrabold py-3.5 rounded-2xl shadow-md text-base sm:text-lg flex items-center justify-center space-x-2 transition">
+                        <i class="fa-solid fa-pause"></i>
+                        <span>Pause</span>
+                    </button>
+                    <button id="reset-btn" onclick="resetTimer()" class="bg-rose-500 hover:bg-rose-600 active:scale-95 text-white font-extrabold py-3.5 rounded-2xl shadow-md text-base sm:text-lg flex items-center justify-center space-x-2 transition">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Reset</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Column: Weather & Meal Info -->
+            <div class="space-y-6">
+
+                <!-- Weather Widget (Open-Meteo API for Changwon) -->
+                <section class="bg-white rounded-3xl p-6 shadow-md border-2 border-sky-100 bouncy-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="bg-sky-100 text-sky-500 p-2.5 rounded-2xl">
+                                <i class="fa-solid fa-cloud-sun text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-extrabold text-slate-800">Changwon Weather</h3>
+                                <p class="text-xs text-slate-400 font-semibold">창원 월영동 날씨</p>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-sky-50 text-sky-600 px-2.5 py-1 rounded-full font-bold border border-sky-100">Live</span>
+                    </div>
+
+                    <!-- Weather Content -->
+                    <div id="weather-container" class="flex items-center justify-between bg-gradient-to-r from-sky-50 to-blue-50 rounded-2xl p-4 border border-sky-100">
+                        <div class="flex items-center space-x-3">
+                            <div id="weather-icon-box" class="text-4xl text-sky-500">
+                                <i class="fa-solid fa-spinner animate-spin text-2xl"></i>
+                            </div>
+                            <div>
+                                <div id="weather-temp" class="text-3xl font-extrabold text-slate-800">--°C</div>
+                                <div id="weather-desc" class="text-xs font-bold text-slate-600">Loading Weather...</div>
+                            </div>
+                        </div>
+                        <div class="text-right text-xs text-slate-500 font-semibold space-y-1">
+                            <div><i class="fa-solid fa-droplet text-blue-400 mr-1"></i> <span id="weather-humidity">--%</span></div>
+                            <div><i class="fa-solid fa-wind text-teal-400 mr-1"></i> <span id="weather-wind">-- m/s</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Today's School Meal Widget (NEIS API) -->
+                <section class="bg-white rounded-3xl p-6 shadow-md border-2 border-amber-100 bouncy-hover flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="bg-amber-100 text-amber-600 p-2.5 rounded-2xl">
+                                <i class="fa-solid fa-utensils text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-extrabold text-slate-800">Today's Lunch</h3>
+                                <p class="text-xs text-slate-400 font-semibold">월영초등학교 급식 식단표</p>
+                            </div>
+                        </div>
+                        <button onclick="fetchSchoolMeal()" class="text-xs text-amber-600 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-full font-bold transition border border-amber-200">
+                            <i class="fa-solid fa-arrows-rotate mr-1"></i> Refresh
+                        </button>
+                    </div>
+
+                    <!-- Meal List Container -->
+                    <div id="meal-container" class="bg-amber-50/50 rounded-2xl p-4 border border-amber-200 min-h-[160px] flex flex-col justify-center">
+                        <div class="text-center text-slate-400 text-sm font-semibold">
+                            <i class="fa-solid fa-spinner animate-spin text-xl text-amber-500 mb-2"></i>
+                            <p>Loading meal data...</p>
+                        </div>
+                    </div>
+                    
+                    <div id="meal-origin-tag" class="mt-2 text-right text-[10px] text-slate-400 font-semibold">
+                        Data: 경상남도교육청 NEIS (월영초등학교)
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
+
+        <!-- Interactive Classroom Activity Cards -->
+        <section class="bg-white rounded-3xl p-6 shadow-md border-2 border-teal-100">
+            <h3 class="text-xl font-extrabold text-slate-800 mb-4 flex items-center">
+                <i class="fa-solid fa-icons text-teal-500 mr-2"></i>
+                Classroom English Expressions
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <button onclick="speakText('Raise your hand please')" class="p-4 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-2xl text-center font-bold text-teal-800 transition active:scale-95 group">
+                    <i class="fa-solid fa-hand text-2xl text-teal-500 mb-2 group-hover:scale-110 transition-transform"></i>
+                    <p class="text-sm">Raise your hand 🙋‍♂️</p>
+                    <p class="text-xs text-teal-600 font-normal mt-1">손을 들어주세요</p>
+                </button>
+                <button onclick="speakText('Listen carefully')" class="p-4 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-2xl text-center font-bold text-sky-800 transition active:scale-95 group">
+                    <i class="fa-solid fa-ear-listen text-2xl text-sky-500 mb-2 group-hover:scale-110 transition-transform"></i>
+                    <p class="text-sm">Listen carefully 👂</p>
+                    <p class="text-xs text-sky-600 font-normal mt-1">잘 들어보세요</p>
+                </button>
+                <button onclick="speakText('Repeat after me')" class="p-4 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-2xl text-center font-bold text-purple-800 transition active:scale-95 group">
+                    <i class="fa-solid fa-comments text-2xl text-purple-500 mb-2 group-hover:scale-110 transition-transform"></i>
+                    <p class="text-sm">Repeat after me 🗣️</p>
+                    <p class="text-xs text-purple-600 font-normal mt-1">따라 읽어보세요</p>
+                </button>
+                <button onclick="speakText('Great job everyone')" class="p-4 bg-pink-50 hover:bg-pink-100 border border-pink-200 rounded-2xl text-center font-bold text-pink-800 transition active:scale-95 group">
+                    <i class="fa-solid fa-thumbs-up text-2xl text-pink-500 mb-2 group-hover:scale-110 transition-transform"></i>
+                    <p class="text-sm">Great job! 👏</p>
+                    <p class="text-xs text-pink-600 font-normal mt-1">참 잘했어요!</p>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8 text-center text-xs text-slate-400 font-semibold">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div>
+                © 창원 월영초등학교 (Woryoung Elementary School) | English Room - Teacher Audrey
+            </div>
+            <div class="flex items-center space-x-3 text-slate-400">
+                <span><i class="fa-solid fa-location-dot text-rose-400 mr-1"></i> Changwon, South Korea</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Alarm End Overlay Modal -->
+    <div id="alarm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border-4 border-yellow-300 transform animate-bounce">
+            <div class="w-20 h-20 bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl shadow-inner">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <h3 class="text-3xl font-black text-slate-800 mb-1">Time's Up!</h3>
+            <p class="text-slate-500 font-bold mb-6">시간이 다 되었어요! 활동을 마무리해주세요.</p>
+            <button onclick="closeAlarmModal()" class="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-extrabold py-3 rounded-2xl shadow-md text-lg transition active:scale-95">
+                Awesome! (확인)
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        /* ==========================================================================
+           1. Initialization & Dates
+           ========================================================================== */
+        window.onload = function() {
+            updateDateHeader();
+            updateTimeGreeting();
+            fetchWeather();
+            fetchSchoolMeal();
+            updateWordDisplay();
+        };
+
+        function updateDateHeader() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' };
+            const formattedDate = now.toLocaleDateString('ko-KR', options);
+            document.getElementById('current-date').innerText = formattedDate;
+        }
+
+        function updateTimeGreeting() {
+            const hour = new Date().getHours();
+            const greetingEl = document.getElementById('time-greeting');
+            if (hour < 12) {
+                greetingEl.innerText = "Good Morning, Class! ☀️";
+            } else if (hour < 17) {
+                greetingEl.innerText = "Good Afternoon, Class! 🌤️";
+            } else {
+                greetingEl.innerText = "Good Evening, Class! 🌙";
+            }
+        }
+
+        /* ==========================================================================
+           2. Classroom Timer Logic
+           ========================================================================== */
+        let timerInterval = null;
+        let totalSeconds = 300; // default 5 min
+        let initialSeconds = 300;
+        let isRunning = false;
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            document.getElementById('timer-display').innerText = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            // Update Progress Bar
+            const percent = initialSeconds > 0 ? (totalSeconds / initialSeconds) * 100 : 0;
+            const progressBar = document.getElementById('timer-progress');
+            progressBar.style.width = `${percent}%`;
+
+            if (percent < 20) {
+                progressBar.className = "bg-rose-500 h-full transition-all duration-500 rounded-full";
+            } else if (percent < 50) {
+                progressBar.className = "bg-amber-400 h-full transition-all duration-500 rounded-full";
+            } else {
+                progressBar.className = "bg-pink-500 h-full transition-all duration-500 rounded-full";
+            }
+        }
+
+        function startTimer() {
+            if (isRunning || totalSeconds <= 0) return;
+            isRunning = true;
+
+            timerInterval = setInterval(() => {
+                if (totalSeconds > 0) {
+                    totalSeconds--;
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    playAlarmSound();
+                    showAlarmModal();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            totalSeconds = initialSeconds;
+            updateTimerDisplay();
+        }
+
+        function setTimer(minutes) {
+            pauseTimer();
+            initialSeconds = minutes * 60;
+            totalSeconds = initialSeconds;
+            updateTimerDisplay();
+        }
+
+        function applyCustomTime() {
+            const min = parseInt(document.getElementById('custom-min').value) || 0;
+            const sec = parseInt(document.getElementById('custom-sec').value) || 0;
+            const newTotal = (min * 60) + sec;
+            if (newTotal > 0) {
+                pauseTimer();
+                initialSeconds = newTotal;
+                totalSeconds = newTotal;
+                updateTimerDisplay();
+            }
+        }
+
+        function playAlarmSound() {
+            try {
+                // Play melody using Tone.js synthesizer
+                const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                const now = Tone.now();
+                synth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "8n", now);
+                synth.triggerAttackRelease(["G5", "B5", "D6", "G6"], "8n", now + 0.3);
+                synth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "4n", now + 0.6);
+            } catch (e) {
+                console.log("Audio play prevented or Tone error:", e);
+            }
+        }
+
+        function showAlarmModal() {
+            document.getElementById('alarm-modal').classList.remove('hidden');
+        }
+
+        function closeAlarmModal() {
+            document.getElementById('alarm-modal').classList.add('hidden');
+        }
+
+        /* ==========================================================================
+           3. Weather Widget (Open-Meteo for Changwon: Lat 35.17, Lon 128.56)
+           ========================================================================== */
+        async function fetchWeather() {
+            const lat = 35.17;
+            const lon = 128.56;
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&relativehumidity_2m=true`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data && data.current_weather) {
+                    const temp = Math.round(data.current_weather.temperature);
+                    const wind = data.current_weather.windspeed;
+                    const code = data.current_weather.weathercode;
+                    
+                    document.getElementById('weather-temp').innerText = `${temp}°C`;
+                    document.getElementById('weather-wind').innerText = `${wind} km/h`;
+                    document.getElementById('weather-humidity').innerText = `Live`;
+
+                    const weatherInfo = parseWeatherCode(code);
+                    document.getElementById('weather-desc').innerText = weatherInfo.desc;
+                    document.getElementById('weather-icon-box').innerHTML = weatherInfo.icon;
+                }
+            } catch (err) {
+                console.error("Weather fetch failed:", err);
+                document.getElementById('weather-desc').innerText = "Clear (맑음)";
+                document.getElementById('weather-temp').innerText = "20°C";
+                document.getElementById('weather-icon-box').innerHTML = '<i class="fa-solid fa-sun text-amber-400"></i>';
+            }
+        }
+
+        function parseWeatherCode(code) {
+            if (code === 0) return { desc: "Sunny / Clear (맑음)", icon: '<i class="fa-solid fa-sun text-amber-400 animate-pulse"></i>' };
+            if (code >= 1 && code <= 3) return { desc: "Partly Cloudy (구름 조금)", icon: '<i class="fa-solid fa-cloud-sun text-sky-400"></i>' };
+            if (code >= 45 && code <= 48) return { desc: "Foggy (안개)", icon: '<i class="fa-solid fa-smog text-slate-400"></i>' };
+            if (code >= 51 && code <= 67) return { desc: "Rainy (비)", icon: '<i class="fa-solid fa-cloud-rain text-blue-400"></i>' };
+            if (code >= 71 && code <= 77) return { desc: "Snowy (눈)", icon: '<i class="fa-solid fa-snowflake text-sky-300"></i>' };
+            if (code >= 80 && code <= 82) return { desc: "Showers (소나기)", icon: '<i class="fa-solid fa-cloud-showers-heavy text-blue-500"></i>' };
+            if (code >= 95) return { desc: "Thunderstorm (뇌우)", icon: '<i class="fa-solid fa-cloud-bolt text-yellow-500"></i>' };
+            return { desc: "Clear Sky (맑음)", icon: '<i class="fa-solid fa-sun text-amber-400"></i>' };
+        }
+
+        /* ==========================================================================
+           4. School Meal Widget (NEIS Public API for Changwon Woryoung ES)
+           ========================================================================== */
+        async function fetchSchoolMeal() {
+            const mealContainer = document.getElementById('meal-container');
+            mealContainer.innerHTML = `
+                <div class="text-center text-slate-400 text-sm font-semibold py-4">
+                    <i class="fa-solid fa-spinner animate-spin text-2xl text-amber-500 mb-2"></i>
+                    <p>Fetching today's meal...</p>
+                </div>
+            `;
+
+            // Dates YYYYMMDD
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const ymd = `${year}${month}${day}`;
+
+            // Gyeongnam Office of Education: S10 / Changwon Woryoung ES Code: 9022086 & 9010156
+            const officeCode = "S10";
+            const primarySchoolCode = "9022086";
+            const secondarySchoolCode = "9010156";
+            
+            try {
+                // First try primary school code (9022086)
+                let success = await tryFetchMeal(officeCode, primarySchoolCode, ymd);
+                if (!success) {
+                    // Try secondary code (9010156)
+                    success = await tryFetchMeal(officeCode, secondarySchoolCode, ymd);
+                }
+
+                if (!success) {
+                    const isWeekend = now.getDay() === 0 || now.getDay() === 6;
+                    const weekendMsg = isWeekend ? "주말에는 급식이 제공되지 않습니다. 🎈" : "오늘 급식 정보가 등록되지 않았거나 휴업일입니다. 😊";
+                    renderFallbackMeal(weekendMsg);
+                }
+            } catch (err) {
+                console.warn("NEIS API call failed, showing sample fallback menu:", err);
+                const sampleItems = [
+                    "친환경 현미밥",
+                    "쇠고기 미역국",
+                    "수제 돈까스",
+                    "마카로니 콘샐러드",
+                    "배추김치",
+                    "샤인머스캣"
+                ];
+                renderMealList(sampleItems, true);
+            }
+        }
+
+        async function tryFetchMeal(officeCode, schoolCode, ymd) {
+            const neisUrl = `https://open.neis.go.kr/hub/mealServiceDietInfo?Type=json&pIndex=1&pSize=5&ATPT_OFCDC_SC_CODE=${officeCode}&SD_SCHUL_CODE=${schoolCode}&MLSV_YMD=${ymd}`;
+            
+            try {
+                const response = await fetch(neisUrl);
+                const data = await response.json();
+
+                if (data.mealServiceDietInfo && data.mealServiceDietInfo[1].row.length > 0) {
+                    const mealRow = data.mealServiceDietInfo[1].row[0];
+                    let rawMenu = mealRow.DDISH_NM;
+                    
+                    // Clean up menu text (remove numbers/allergy codes in parentheses like 1.2.5.6. and HTML tags)
+                    let cleanMenu = rawMenu
+                        .replace(/\([0-9\.]+\)/g, '')
+                        .replace(/<br\/>/g, '\n')
+                        .replace(/[*#]/g, '')
+                        .trim();
+                    
+                    let menuItems = cleanMenu.split('\n').filter(item => item.trim() !== '');
+                    if (menuItems.length > 0) {
+                        renderMealList(menuItems);
+                        return true;
+                    }
+                }
+            } catch (e) {
+                console.log("Fetch attempt failed for school code:", schoolCode);
+            }
+            return false;
+        }
+
+        function renderMealList(items, isFallback = false) {
+            const mealContainer = document.getElementById('meal-container');
+            let html = `<ul class="space-y-1.5 text-sm font-bold text-slate-700">`;
+            
+            items.forEach(item => {
+                html += `
+                    <li class="flex items-center space-x-2">
+                        <i class="fa-solid fa-circle-check text-amber-500 text-xs"></i>
+                        <span>${item.trim()}</span>
+                    </li>
+                `;
+            });
+            html += `</ul>`;
+
+            if (isFallback) {
+                html += `<div class="mt-2 text-[11px] text-amber-700 bg-amber-100/60 rounded-lg p-1.5 text-center font-semibold">
+                    * 예시 식단표 (주말/휴업일)
+                </div>`;
+            }
+
+            mealContainer.innerHTML = html;
+        }
+
+        function renderFallbackMeal(msg) {
+            const mealContainer = document.getElementById('meal-container');
+            mealContainer.innerHTML = `
+                <div class="text-center text-slate-500 font-bold py-6">
+                    <p class="text-sm mb-1"><i class="fa-solid fa-calendar-xmark text-amber-400 text-xl block mb-2"></i></p>
+                    <p class="text-sm">${msg}</p>
+                </div>
+            `;
+        }
+
+        /* ==========================================================================
+           5. Word of the Day & TTS Speech Synthesis
+           ========================================================================== */
+        const vocabularyList = [
+            { word: "Awesome", pronounce: "[ AW-suhm ]", meaning: "멋진, 아주 훌륭한", example: '"You did an awesome job today!"' },
+            { word: "Courage", pronounce: "[ KUR-ij ]", meaning: "용기, 담력", example: '"Have courage and try your best!"' },
+            { word: "Friendship", pronounce: "[ FREND-ship ]", meaning: "우정, 친선", example: '"Friendship makes our classroom happy."' },
+            { word: "Explore", pronounce: "[ ik-SPLOR ]", meaning: "탐험하다, 알아보다", example: '"Let us explore new English words!"' },
+            { word: "Cheerful", pronounce: "[ CHEER-fuhl ]", meaning: "쾌활한, 명랑한", example: '"Audrey teacher is always cheerful!"' }
+        ];
+
+        let currentWordIdx = 0;
+
+        function updateWordDisplay() {
+            const current = vocabularyList[currentWordIdx];
+            document.getElementById('word-title').innerText = current.word;
+            document.getElementById('word-pronounce').innerText = current.pronounce;
+            document.getElementById('word-meaning').innerText = current.meaning;
+            document.getElementById('word-example').innerText = current.example;
+
+            document.getElementById('listen-word-btn').onclick = function() {
+                speakText(current.word);
+            };
+        }
+
+        function nextWord() {
+            currentWordIdx = (currentWordIdx + 1) % vocabularyList.length;
+            updateWordDisplay();
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop any ongoing speech
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9; // slightly slower for elementary learners
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.log("Text-to-speech is not supported on this browser.");
+            }
+        }
+    </script>
+</body>
+</html>
